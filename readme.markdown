@@ -2,7 +2,7 @@
 
 use npm to manage your private modules, without having to replicate all of npm.
 
-## how it works
+## How it Works
 
 shadow-npm works a lot like puting something at the front of your `$PATH` 
 when searching for a module, look there at the start first, then the next if you don't find it.
@@ -11,7 +11,7 @@ shadow-npm does this for npm, it proxies all requests, and checks for modules in
 then, if it does not find them, it will retrive them from the real npm! 
 this works even if you have a private module with open dependencies!
 
-## installation
+## Installation
 
  1. install an npm registry in your couchdb following the instructions at: https://github.com/isaacs/npmjs.org
     note: you may have to disable 'secure rewrites' under your couchdb configuration
@@ -40,6 +40,14 @@ npm --registry http://localhost:8686 publish
 ```
 
 enjoy!
+
+## Search UI
+
+this didn't work for some reason.
+
+You wont have enough modules that you will need it anyway,  
+so just use the `npm search --registry ...` command.  
+it will only return results from the shadow registry.  
 
 ## User Authentication
 I havn't looked into this yet. we accept pull requests.
