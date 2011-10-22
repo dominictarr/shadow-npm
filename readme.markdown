@@ -48,6 +48,12 @@ you want from the real npm, since `registry.npmjs.org/-/user/org.couchdb.user:$U
 we will pretty much just copy it over, and then that user will be able to use the private npm, without
 having to signup again, or change or reveal their credentials.
 
+you just have to tell npm to always use authentication:
+
+``` bash
+npm config set always-auth true
+```
+
 After you have installed the couchapp, and created an admin user,  
 go to the registry database in futon (your-couchdb`/_utils/database.html?registry`)
 click on "Security", then add `"team"` to the roles array.
