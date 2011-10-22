@@ -2,17 +2,41 @@ var http = require('http'),
     url = require('url'), 
     fs = require('fs'), 
     join = require('path').join,
+    request = require('request'),
     argv = require('optimist').argv
 
-var file = argv.c || argv.config || join(__dirname, 'config.json'),
-    port = argv.p || argv.port || 8686,
+ var port = argv.p || argv.port || 8686,
     shadow;
-try {
-  shadow = JSON.parse(fs.readFileSync(file))
-} catch (err) {
-  console.error('USAGE: node shadow-npm.js -c config.json -p 8686')
-  throw err
+
+function usage() {
+
+  console.error([
+    'USAGE:',
+    '  start shadow-npm:',
+    '     node shadow-npm.js -c config.json -p 8686 ',
+    '',
+    '  add npm user `user` to your private npm:',
+    '    node shadow-npm.js -c config.json -u user -a admin:password',
+    '',
+    '  show this help message',
+    '    node shadow-npm.js -h'
+    ].join('\n')
+    )
 }
+
+if(argv.h || argv.help) return usage()
+
+function loadConfig () {
+  var file = argv.c || argv.config || join(__dirname, 'config.json');
+
+  try {
+    return JSON.parse(fs.readFileSync(file))
+  } catch (err) {
+    throw err
+  }
+}
+
+var shadow = loadConfig()
 
 var real = {
   host: 'registry.npmjs.org',
@@ -23,18 +47,28 @@ function proxy (req, res, opts, callback) {
   var _opts = {};
   _opts.host = opts.host;
   _opts.path = opts.path + req.url;
+  _opts.headers = req.headers
+  delete _opts.headers.host
+  /*{
+    authorization: req.headers.authorization
+  , 'content-type': req.headers['content-type']
+  }*/
   _opts.method = req.method;
-
+  console.error(_opts)
   return http.request(_opts, callback);
 }
 
-http.createServer(function (req, res) {
+var server = http.createServer(function (req, res) {
   console.error('INCOMMING', req.method, req.url);
+
+  req.pipe(process.stderr, {end: false})  
 
   var _req = proxy (req, res, shadow, function (_res) {
     console.error('SHADOW', _res.statusCode)
 
-    if(_res.statusCode < 300) {
+    //if it was okay, or was an auth error, stop now.
+
+    if(_res.statusCode < 300 || _res.statusCode == 401) {
 
       res.writeHeader(_res.statusCode, _res.headers)
       _res.pipe(res)
@@ -52,10 +86,41 @@ http.createServer(function (req, res) {
   })
   req.pipe(_req)
 
-}).listen(port, function () {
-  console.error('shadow-npm listening on port:' + port)
 })
 
-process.on('uncaughtException', function (err) {
-  console.error(err && err.stack || err)
-})
+//copy a user from the real npm
+function adduser (username, auth, callback) {
+  request('http://' + real.host + '/-/user/org.couchdb.user:' + username, function (error, res, body) {
+
+    var user = JSON.parse(body)
+    delete user._rev
+    user.roles.push('team')
+    console.error(user)
+    console.error('AUTH', 
+    auth)
+    request.put({
+      url: 'http://' + shadow.host + '/_users/org.couchdb.user:' + username,
+      headers: {authorization: 'Basic ' + new Buffer(auth).toString('base64') },
+      json: user
+      }, function (err, res, body) {
+        callback(err, body)
+      })
+  })
+}
+
+
+if (!argv.u || argv.user) {
+  server.listen(port, function () {
+    console.error('shadow-npm listening on port:' + port)
+  })
+
+  process.on('uncaughtException', function (err) {
+    console.error(err && err.stack || err)
+  })
+
+} else {
+  adduser(argv.u || argv.user, argv.a || auth, function (err, result) {
+    if(err) throw err
+    console.log(result)
+  })
+}
