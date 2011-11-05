@@ -26,15 +26,6 @@ function usage() {
 
 if(argv.h || argv.help) return usage()
 
-function loadConfig () {
-  var file = argv.c || argv.config || join(__dirname, 'config.json');
-
-  try {
-    return JSON.parse(fs.readFileSync(file))
-  } catch (err) {
-    throw err
-  }
-}
 
 var shadow = loadConfig()
 
@@ -61,14 +52,12 @@ function proxy (req, res, opts, callback) {
 var server = http.createServer(function (req, res) {
   console.error('INCOMMING', req.method, req.url);
 
-  req.pipe(process.stderr, {end: false})  
-
   var _req = proxy (req, res, shadow, function (_res) {
     console.error('SHADOW', _res.statusCode)
 
     //if it was okay, or was an auth error, stop now.
 
-    if(_res.statusCode < 300 || _res.statusCode == 401) {
+    if(_res.statusCode < 300 || _res.statusCode == 401 || _res.statusCode == 409) {
 
       res.writeHeader(_res.statusCode, _res.headers)
       _res.pipe(res)
