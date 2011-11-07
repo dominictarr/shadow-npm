@@ -2,7 +2,7 @@
   "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://bit.ly/dominictarr)",
   "name": "shadow-npm",
   "description": "lightweight private npm",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "repository": {
     "url": ""
   },
@@ -10,9 +10,10 @@
   "engines": {
     "node": ">=0.4.0"
   },
-  "dependencies": { 
-    "optimist": "0.2.8"
-  , "request":  "~2.1"
+  "dependencies": {
+    "optimist": "0.2.8",
+    "request": "~2.1",
+    "config-chain": "0"
   },
   "subdomain": "npm",
   "scripts": {

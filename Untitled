@@ -1,0 +1,67 @@
+# create database
+
+curl -X PUT http://$ADDRESS/$DATABASE
+
+# push couch app
+
+couchapp push registry/app.js
+
+# allow insecure rewrite rules
+#(only needs to be done once per couch instance)
+
+curl -X PUT -d '"false"' http://$ADDRESS/_config/httpd/secure_rewrites | json_render
+
+# may now add user(s)
+
+npm adduser --registry http://$ADDRESS/$DATABASE/_design/app/_rewrite
+
+# make a user the database admin.
+# the admin should be able to add other users (team members), who may publish, but not add other users.
+# non-members should not be able to read or publish.
+# it should be possible for users to be members of more than one registry.
+
+### products
+
+# 1) create a new database, with first admin.
+
+# 2) add a user as a member.
+
+# 3) add a user as a admin.
+
+### tests
+
+# an admin should be able to publish, install, or search.
+# a stranger should not be able to publish, install, or search.
+# an admin may add other users as members.
+# a member should not be able to add other users as members.
+# a member should be able to publish, install, or search.
+# an admin should be able to add another user as an admin.
+
+
+## --- QUESTIONS ---
+
+Q where does the first admin come from? 
+A just copy from the npm registry.
+(don't support creating new admins yet)
+
+--- create registry PUT /subdomain/user
+
+copy user (if havn't already), (will need to update the user if it's changed... just replicate all _users)?
+create new database,
+add the new user as admin,
+couchapp push.
+
+FAIL IF: subdomain is already in use, or if user does not exist in npm.
+
+--- add user
+
+copy user (if havn't already),
+add the new user as a reader for that database. (this will fail the user is not an admin)
+
+--- remove user
+
+auth as admin
+#leave the user there
+remove the user as reader on that database.
+
+--- 
