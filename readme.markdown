@@ -30,7 +30,6 @@ publish a module to it!
 npm config set always-auth true
 cd path/to/private/module
 npm publish --registry $YOURSUBDOMAIN.shadow-npm.net
-
 </pre>
 
 ## How it Works
@@ -71,6 +70,7 @@ send to either:
   
   read the shadow-npm code here: https://github.com/dominictarr/shadow-npm
 
-## licence
+## Licence
 
-MIT
+MIT licence, 2011, Dominic Tarr 
+(_NOT_ isaacs, joyent, etc. please don't bug them if this doesn't work)
