@@ -3,9 +3,6 @@
   font-size: 24px;
   width: 430;
 }
-h1, h2 {
-
-}
 
 .art, pre {
   background: hsl(120,5%,5%);
@@ -22,20 +19,32 @@ h1, h2 {
 
 p {
   padding-left: 5px;
+  
 }
 
 #content {
-  background: hsl(0,0%,60%);
+
+  border-left: solid 40px hsl(0,0%,60%);
+  border-right: solid 40px hsl(0,0%,60%);
+  background: hsl(0,0%,80%);
+  
+//  background: hsl(0,0%,60%);
   color: hsl(10,20%,20%);
   padding: 10px;
 }
 
+a:visited { color: hsl(0,0%,30%); }
+a:link { color: hsl(0,0%,30%); }
+a:active { color: hsl(0,0%,40%); font-style: italic;}
+a:hover { color: hsl(0,0%,40%); }
+
 body {
   margin: auto;
-  width: 600;
+  width: 700;
   background: darkgrey;
   font-family: sans;
 }
+
 pre {
   padding: 10px;
 }

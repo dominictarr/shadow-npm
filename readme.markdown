@@ -19,9 +19,7 @@ use npm to manage your private modules, without having to replicate all of npm.
 create your own private registry:
 
 <pre>
-
 curl -X PUT 'shadow-npm.net/$YOURSUBDOMAIN?admins=$YOUR_NPM_USER'
-
 </pre>
 
 publish a module to it!
@@ -54,7 +52,7 @@ this is a test launch, so bugs are expected. all feedback is warmly welcomed!
 send to either: 
 
   * https://github.com/dominictarr/shadow-npm/issues
-  * [@dominictarr](twitter.com/#!/dominictarr)
+  * [@dominictarr](http://twitter.com/#!/dominictarr)
   * dominic.tarr@gmail.com
 
 ## Search
@@ -65,12 +63,12 @@ send to either:
 
 ## User Authentication
 
-  `shadow-npm` copies your couchdb user from the npm registry, and uses couchdb to auth against it.
-  the your password is hashed, and shadow-npm never reads it.
+  shadow-npm copies your couchdb user from the npm registry, and uses couchdb to auth against it. the your password is hashed, and shadow-npm never reads it.
   
   read the shadow-npm code here: https://github.com/dominictarr/shadow-npm
 
 ## Licence
 
 MIT licence, 2011, Dominic Tarr 
+
 (_NOT_ isaacs, joyent, etc. please don't bug them if this doesn't work)
