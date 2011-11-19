@@ -19,6 +19,11 @@ create your own private registry:
 
 curl -X PUT 'shadow-npm.net/$YOURSUBDOMAIN?admins=$YOUR_NPM_USER
 
+# or add your whole team:
+curl -X PUT 'shadow-npm.net/$YOURSUBDOMAIN?admins=$YOUR_NPM_USER&readers=tom,dick,harry
+
+#admins can add/rm users and other admins.
+#readers can install and publish modules.
 ```
 
 publish a module to it!

@@ -13,7 +13,12 @@
   "dependencies": {
     "optimist": "0.2.8",
     "request": "~2.1",
-    "config-chain": "0"
+    "config-chain": "0",
+    "json-rest": "1",
+    "ctrlflow" : "~4.1",
+    "ubelt" : "~2.11",
+    "event-stream": "~0.6",
+    "connect" : "1.8"
   },
   "subdomain": "npm",
   "scripts": {

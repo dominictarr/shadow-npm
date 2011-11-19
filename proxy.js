@@ -1,4 +1,3 @@
-
 var http = require('http')
   , es = require('event-stream')
 
@@ -9,7 +8,6 @@ function proxy (req, res, opts, callback) {
   _opts.headers = req.headers
   delete _opts.headers.host
   _opts.method = req.method;
-  console.error(_opts)
   var _req = http.request(_opts)
   _req.on('response', callback);
   return _req
@@ -21,15 +19,19 @@ module.exports = function (lookup, config) {
       return { host: 'registry.npmjs.org', path: '' }
     }
 
-
-  var server = http.createServer(function (req, res) {
-    console.error('INCOMMING', req.method, req.url)
+  var handler = function (req, res, next) {
+    console.error('INCOMMING', req.method, req.headers.host, req.url)
     var shadow = lookup.getShadow(req)
-      , shadowHost = shadow.host + shadow.path
-      , here = lookup.getHere()
+    if(!shadow)
+      return next()
+  
+    var shadowHost = shadow.host + shadow.path
+      , here = lookup.getHere(req)
       , hereHost = here.host + here.path
+
+
     var _req = proxy (req, res, shadow, function (_res) {
-      console.error('SHADOW', _res.statusCode, _res.headers)
+      console.error('SHADOW', shadow.path, _res.statusCode)
 
       //if it was okay, or was an auth error, stop now.
 
@@ -42,10 +44,10 @@ module.exports = function (lookup, config) {
           _res.pipe(process.stderr, {end: false})
         } else {
         _res.pipe(res)
-        //_res.pipe(process.stderr, {end: false}) 
         }
       } else {
 
+        delete req.headers.authorizaton
         var _req2 = proxy (req, res, lookup.getReal(req), function (_res2) {
 
           console.error('NPM', _res2.statusCode)
@@ -57,6 +59,6 @@ module.exports = function (lookup, config) {
     })
     req.pipe(_req)
     req.on('error', console.error)
-  })
-  return server
+  }
+  return handler
 }
