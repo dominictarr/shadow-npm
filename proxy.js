@@ -29,7 +29,6 @@ module.exports = function (lookup, config) {
       , here = lookup.getHere(req)
       , hereHost = here.host + here.path
 
-
     var _req = proxy (req, res, shadow, function (_res) {
       console.error('SHADOW', shadow.path, _res.statusCode)
 

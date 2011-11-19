@@ -1,5 +1,5 @@
-<style> .art {background: black; color: green} </style>
 <pre class=art>
+
         /          /         
    _   /_  __.  __/  __ , , ,
   /_)_/ /_(_/|_(_/_ (_)(_(_/_
@@ -43,7 +43,7 @@ it checks for modules in your private npm first.
 then, if it does not find them, it will retrive them from the real npm! 
 this works even if you have a private module with open source dependencies!
 
-## trouble shooting
+## Trouble Shooting
 
 post issues here: https://github.com/dominictarr/shadow-npm/issues
 
@@ -60,9 +60,9 @@ send to either:
 
 ## Search
 
-```
+<pre>
   npm search --registry $YOURSUBDOMAIN.shadow-npm.net
-```
+</pre>
 
 ## User Authentication
 

@@ -11,6 +11,23 @@ function split (list) {
   return list.split(',')
 }
 
+var html
+function readme () {
+  if(config.env == 'development' || !html)
+    html = [
+      '<html>',
+      '<head><title>shadow-npm</title>',
+      '<style>',
+      fs.readFileSync(__dirname+'/style.css', 'utf-8'),
+      '</style></head><body><div id=content>',
+      ghm.parse(fs.readFileSync(__dirname+'/readme.markdown', 'utf-8')),
+      '</div></body></html>'
+    ].join('')
+
+  return html
+}
+
+
 var server = 
   connect(
     shadowProxy(require('./subdomains')(config)),
@@ -18,9 +35,8 @@ var server =
     connect.logger(),
     connect.router(function (app) {
       app.all('/', function (req, res) {
-        var html = ghm.parse(fs.readFileSync(__dirname+'/readme.markdown', 'utf-8').toString())
         res.writeHeader(200, {'content-type': 'text/html'})
-        res.end(html)
+        res.end(readme())
       })
       app.put('/:db', function (req, res) {
         var users = {

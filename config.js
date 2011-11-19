@@ -15,6 +15,7 @@ module.exports = function (env) {
       port: env == 'production' ? 80 : 8686 
     , rewrite_path: "/_design/app/_rewrite"
     , registry: "http://registry.npmjs.org"
+    , domain: 'shadow-npm.net'
     }
   ).store
   
