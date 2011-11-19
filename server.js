@@ -1,8 +1,11 @@
-
 var connect = require('connect')
   , config = require('./config')()
   , registries = require('./registries')(config)
   , shadowProxy = require('./proxy')
+  , fs = require('fs')
+  , ghm = require('github-flavored-markdown')
+  ;
+
 function split (list) {
   if(!list) return []
   return list.split(',')
@@ -14,6 +17,11 @@ var server =
     connect.query(),
     connect.logger(),
     connect.router(function (app) {
+      app.all('/', function (req, res) {
+        var html = ghm.parse(fs.readFileSync(__dirname+'/readme.markdown', 'utf-8').toString())
+        res.writeHeader(200, {'content-type': 'text/html'})
+        res.end(html)
+      })
       app.put('/:db', function (req, res) {
         var users = {
             admins: split(req.query.admins),

@@ -1,4 +1,5 @@
-```
+<style> .art {background: black; color: green} </style>
+<pre class=art>
         /          /         
    _   /_  __.  __/  __ , , ,
   /_)_/ /_(_/|_(_/_ (_)(_(_/_
@@ -6,7 +7,9 @@
   |     ||  _  ||        |
   |__|__||   __||__|__|__|
          |__|             
-```
+
+</pre>
+
 # shadow-npm
 
 use npm to manage your private modules, without having to replicate all of npm.
@@ -15,20 +18,20 @@ use npm to manage your private modules, without having to replicate all of npm.
 
 create your own private registry:
 
-``` bash
+<pre>
 
-curl -X PUT 'shadow-npm.net/$YOURSUBDOMAIN?admins=$YOUR_NPM_USER
+curl -X PUT 'shadow-npm.net/$YOURSUBDOMAIN?admins=$YOUR_NPM_USER'
 
-```
+</pre>
 
 publish a module to it!
 
-``` bash
+<pre>
 npm config set always-auth true
 cd path/to/private/module
 npm publish --registry $YOURSUBDOMAIN.shadow-npm.net
 
-```
+</pre>
 
 ## How it Works
 
@@ -57,12 +60,8 @@ send to either:
 
 ## Search
 
-there is not currently a web interface.
-
-list the modules in your registry with:
-
-``` bash
-npm search --registry $YOURSUBDOMAIN.shadow-npm.net
+```
+  npm search --registry $YOURSUBDOMAIN.shadow-npm.net
 ```
 
 ## User Authentication
@@ -71,7 +70,6 @@ npm search --registry $YOURSUBDOMAIN.shadow-npm.net
   the your password is hashed, and shadow-npm never reads it.
   
   read the shadow-npm code here: https://github.com/dominictarr/shadow-npm
-  see the current version of the code running on shadow-npm here: https://shadow-npm.net/status
 
 ## licence
 
