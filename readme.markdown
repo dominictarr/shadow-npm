@@ -16,18 +16,20 @@ use npm to manage your private modules, without having to replicate all of npm.
 
 ## Usage
 
-create your own private registry:
+create a private registry named `rego` for npm users `you` and your friends `jim`, `paul`, and `emma`
 
 <pre>
-curl -X PUT 'shadow-npm.net/$YOURSUBDOMAIN?admins=$YOUR_NPM_USER'
+curl -kX PUT \
+'https://shadow-npm.net/rego?admins=you&readers=jim,paul,emma'
 </pre>
+
 
 publish a module to it!
 
 <pre>
 npm config set always-auth true
 cd path/to/private/module
-npm publish --registry $YOURSUBDOMAIN.shadow-npm.net
+npm publish --registry rego.shadow-npm.net
 </pre>
 
 ## How it Works
@@ -58,7 +60,7 @@ send to either:
 ## Search
 
 <pre>
-  npm search --registry $YOURSUBDOMAIN.shadow-npm.net
+  npm search --registry https://rego.shadow-npm.net
 </pre>
 
 ## User Authentication
@@ -69,6 +71,6 @@ send to either:
 
 ## Licence
 
-MIT licence, 2011, Dominic Tarr 
+MIT licence, Dominic Tarr, 2011. 
 
-(_NOT_ isaacs, joyent, etc. please don't bug them if this doesn't work)
+(_not_ isaacs, joyent, etc. please don't bug them if this doesn't work)
