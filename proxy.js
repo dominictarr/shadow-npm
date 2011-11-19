@@ -20,7 +20,7 @@ module.exports = function (lookup, config) {
     }
 
   var handler = function (req, res, next) {
-    console.error('INCOMMING', req.method, req.headers.host, req.url)
+    console.log(req.method, req.headers.host, req.url)
     var shadow = lookup.getShadow(req)
     if(!shadow)
       return next()
@@ -30,17 +30,15 @@ module.exports = function (lookup, config) {
       , hereHost = here.host + here.path
 
     var _req = proxy (req, res, shadow, function (_res) {
-      console.error('SHADOW', shadow.path, _res.statusCode)
-
       //if it was okay, or was an auth error, stop now.
 
       if(_res.statusCode != 404) {
+        console.log('SHADOW-' + req.method, req.host, req.path, _res.statusCode) 
         res.writeHeader(_res.statusCode, _res.headers)
         if(req.headers.accept == 'application/json') {
           var replace = es.replace(shadowHost, hereHost)
           _res.pipe(replace)
           replace.pipe(res)
-          _res.pipe(process.stderr, {end: false})
         } else {
         _res.pipe(res)
         }
@@ -48,16 +46,17 @@ module.exports = function (lookup, config) {
 
         delete req.headers.authorizaton
         var _req2 = proxy (req, res, lookup.getReal(req), function (_res2) {
-
-          console.error('NPM', _res2.statusCode)
+          console.log('NPM-' + req.method, req.host, req.path, _res.statusCode) 
           res.writeHeader(_res2.statusCode, _res2.headers)
           _res2.pipe(res)
         })
         _req2.end() //we are only falling back to the real npm for GET requests
       }
-    })
+      })
     req.pipe(_req)
-    req.on('error', console.error)
+    req.on('error', function (err) {
+        console.log("ERROR", err.stack)
+    })
   }
   return handler
 }

@@ -13,6 +13,7 @@ module.exports = function (env) {
     cc.find('config_shadow-npm/config.json'),
     {
       port: env == 'production' ? 80 : 8686 
+    , httpsPort: 443
     , rewrite_path: "/_design/app/_rewrite"
     , registry: "http://registry.npmjs.org"
     , domain: 'shadow-npm.net'

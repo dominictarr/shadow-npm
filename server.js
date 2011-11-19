@@ -4,6 +4,8 @@ var connect = require('connect')
   , shadowProxy = require('./proxy')
   , fs = require('fs')
   , ghm = require('github-flavored-markdown')
+  , http = require('http')
+  , https = require('https')
   ;
 
 function split (list) {
@@ -19,7 +21,9 @@ function readme () {
       '<head><title>shadow-npm</title>',
       '<style>',
       fs.readFileSync(__dirname+'/style.css', 'utf-8'),
-      '</style></head><body><div id=content>',
+      '</style></head><body>',
+      '<a href="http://github.com/you"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/71eeaab9d563c2b3c590319b398dd35683265e85/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub"></a>',
+      '<div id=content>',
       ghm.parse(fs.readFileSync(__dirname+'/readme.markdown', 'utf-8')),
       '</div></body></html>'
     ].join('')
@@ -28,7 +32,7 @@ function readme () {
 }
 
 
-var server = 
+var handler = 
   connect(
     shadowProxy(require('./subdomains')(config)),
     connect.query(),
@@ -75,7 +79,16 @@ var server =
     })
   )
 
-if(!module.parent)
-  server.listen(config.port, function () {
-    console.error(config.domain +' listening on port:' + config.port)
-  })
+if(!module.parent) {
+    handler.listen(config.port, function () {
+      console.error(config.domain +' listening on port:' + config.port)
+    })
+    if(config.env == 'production')
+      connect({
+        key: fs.readFileSync(__dirname+'/keys/shadow-npm_key.pem')
+      , cert: fs.readFileSync(__dirname+'/keys/shadow-npm_cert.pem')      
+      }, handler).listen(config.httpsPort, function () {
+        console.error(config.domain +' listening for https on port:' + config.httpsPort)
+      })
+
+}

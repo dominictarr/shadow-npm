@@ -15,13 +15,13 @@ module.exports = function (config) {
   var sudo = jsonRest({
     url: config.couch,
     auth: config.admin
-  })
+  }, true)
   var REST = jsonRest({
     url: config.couch
-  })
+  }, true)
   var npm = jsonRest({
     url: config.registry,
-  })
+  }, true)
   exports.create = function (dbname, callback) {
     //create a new registryName
     //copy user  
@@ -32,11 +32,9 @@ module.exports = function (config) {
     var userPath = '/_users/org.couchdb.user:'+username
     sudo({path:userPath}, function (err, user) {
       if(err && (err.error == 'not_found')) {
-        console.error('NOT_FOUND!')
         ctrl([
           [npm, {path: userPath}],
           function (user, next) {
-          console.error(user, 'NEXT:', next)
             delete user._rev
             sudo({path: userPath, method: 'PUT', json: user}, next)
           }
@@ -70,13 +68,18 @@ module.exports = function (config) {
     var secPath = '/' + dbname + '/_security'
     REST({path: secPath , auth: auth}, function (err, users) {
       var users = u.deepMerge(users, {admins: {names: [], roles: []}, readers: {names: [], roles: []}})      
+      added = u.deepMerge(added, {admins: [], readers: []})
 
-      if(added.admins)
+      if(added.admins.length) {
         users.admins.names = u.union(users.admins.names, added.admins)
-      if(added.readers)
+        added.admins.forEach(function (u) {console.log('ADDUSER-ADMIN', u)})
+      }
+      if(added.readers.length) {
         users.readers.names = u.union(users.readers.names, added.readers)
-
-      if(!users.readers.names.length)
+        added.readers.forEach(function (u) {console.log('ADDUSER-READER', u)})
+      }
+      //quick hack to make sure there is always at least one reader.
+      if(!users.readers.names.length) 
         users.readers.names.push('gatekeeper_' + Math.random()) 
 
       REST({path: secPath, method: 'PUT', json: users, auth: auth}, callback)
@@ -88,26 +91,6 @@ module.exports = function (config) {
     exports.copy({path: '/prototype/_design/app'}, {path: '/'+db+'/_design/app'}, callback)
   }
 
-/*  function authUser(dbname, username, type, auth, callback) {
-    var secPath = '/' + dbname + '/_security'
-    
-    if(!callback)
-      callback = auth, auth = null
-    
-    REST({path: secPath , auth: auth}, function (err, users) {
-      var users = u.deepMerge(users, {admins: {names: [], roles: []}, readers: {names: [], roles: []}})      
-
-      if(!~users[type].names.indexOf(username))
-        users[type].names.push(username)
-      //hack to ensure that there is at least one reader
-      if(!users.readers.names.length)
-        users.readers.names.push('gatekeeper_' + Math.random()) 
-
-      REST({path: secPath, method: 'PUT', json: users, auth: auth}, callback)
-    })
-
-  }
-*/
   exports.addReader = function (dbname, username, auth, callback) {
     authUsers(dbname, {readers: [username] }, auth, callback)
   }
@@ -118,7 +101,7 @@ module.exports = function (config) {
     sudo({method: 'DELETE', path: '/'+dbname}, callback)
   }
   
-  //it's just one doc, so copy this with a http request instead.
+  //this function is not currently used.
   exports.couchapp_push = function (dbname, callback) {
     var dir = path.join(__dirname, 'npmjs.org')
       , env = u.merge(process.env, {'PWD': dir})
@@ -130,7 +113,6 @@ module.exports = function (config) {
       })
 
     child.on('exit', function (code) {
-      console.error('EXIT!!!', code)
       if(code) callback({error: 'create_registry_fail', message: 'create npm registry failed'})
       else callback()
     })
@@ -139,12 +121,12 @@ module.exports = function (config) {
   }
 
   exports.setup = function (dbname, users, callback) {
+    console.log('CREATE', dbname, new Date())
+  
     if(!users.admins.length)
       return callback({error:'missing_admin', message: 'a new registry must have at least 1 admin'})
    
-    console.error(callback) 
     var addusers = u.union(users.admins, users.readers)
-    
     ctrl([
       [exports.create, dbname]
     , {
