@@ -17,6 +17,8 @@ module.exports = function (env) {
     , rewrite_path: "/_design/app/_rewrite"
     , registry: "http://registry.npmjs.org"
     , domain: 'shadow-npm.net'
+    , couch: 'http://localhost:5984'
+    , localdb: 'registry' //used when running shadow-npm locally. see local.js
     }
   ).store
   
