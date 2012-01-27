@@ -33,7 +33,7 @@ npm publish --registry http://rego.shadow-npm.net
 
 ## How it Works
 
-shadow-npm works a lot like puting something at the front of your `$PATH` 
+shadow-npm works a lot like putting something at the front of your `$PATH` 
 when searching for a module, look there first, and if you don't find it, check the next place in the chain.
 
 shadow-npm does this for npm, by proxying all requests, 
